@@ -320,21 +320,19 @@ class Leaderboard
   #
   # @return the score and rank for a member in the named leaderboard as a Hash.
   def score_and_rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
-    responses = @redis_connection.multi do |transaction|
-      transaction.zscore(leaderboard_name, member)
+      score = transaction.zscore(leaderboard_name, member)
       if @reverse
-        transaction.zrank(leaderboard_name, member)
+        rank = transaction.zrank(leaderboard_name, member)
       else
-        transaction.zrevrank(leaderboard_name, member)
+        rank = transaction.zrevrank(leaderboard_name, member)
       end
-    end
     
-    responses[0] = responses[0].to_f
+    score = score.to_f
     if !use_zero_index_for_rank
-      responses[1] = responses[1] + 1 rescue nil
+      rank = rank + 1 rescue nil
     end
     
-    {:member => member, :score => responses[0], :rank => responses[1]}    
+    {:member => member, :score => score, :rank => rank}
   end
   
   # Remove members from the leaderboard in a given score range.
