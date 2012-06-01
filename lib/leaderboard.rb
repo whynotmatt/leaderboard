@@ -320,11 +320,11 @@ class Leaderboard
   #
   # @return the score and rank for a member in the named leaderboard as a Hash.
   def score_and_rank_for_in(leaderboard_name, member, use_zero_index_for_rank = false)
-      score = transaction.zscore(leaderboard_name, member)
+      score = @redis_connection.zscore(leaderboard_name, member)
       if @reverse
-        rank = transaction.zrank(leaderboard_name, member)
+        rank = @redis_connection.zrank(leaderboard_name, member)
       else
-        rank = transaction.zrevrank(leaderboard_name, member)
+        rank = @redis_connection.zrevrank(leaderboard_name, member)
       end
     
     score = score.to_f
